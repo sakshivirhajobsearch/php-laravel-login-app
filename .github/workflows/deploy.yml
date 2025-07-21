@@ -1,0 +1,43 @@
+name: Laravel CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        extensions: mbstring, xml, bcmath, mysql
+
+    - name: Install Composer Dependencies
+      run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+    - name: Copy .env
+      run: cp .env.example .env
+
+    - name: Generate Laravel App Key
+      run: php artisan key:generate
+
+    - name: Run Migrations (Optional)
+      env:
+        DB_CONNECTION: mysql
+        DB_HOST: ${{ secrets.DB_HOST }}
+        DB_PORT: ${{ secrets.DB_PORT }}
+        DB_DATABASE: ${{ secrets.DB_DATABASE }}
+        DB_USERNAME: ${{ secrets.DB_USERNAME }}
+        DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      run: php artisan migrate --force
+
+    - name: Deploy to Laravel Forge (Example)
+      run: |
+        curl -X POST https://forge.laravel.com/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deploy \
+        -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}"
