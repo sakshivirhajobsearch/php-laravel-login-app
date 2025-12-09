@@ -19,7 +19,7 @@ No description provided.
 
 ## 🧠 Tech Stack Used
 
-- **Detected Technologies:** Blade, CSS, JavaScript, PHP
+- **Detected Technologies:** Node.js / JavaScript / TypeScript
 - **GitHub Topics:** None
 
 ---
